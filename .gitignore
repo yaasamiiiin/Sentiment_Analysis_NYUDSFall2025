@@ -1,1 +1,12 @@
-.venv
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# OS
+.DS_Store
+
+# Big Files
+*.csv
+*.pkl
+*.h5
