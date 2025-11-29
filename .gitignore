@@ -13,3 +13,8 @@ __pycache__/
 
 # Code package
 sentiment_analysis.egg-info
+
+*.egg-info/
+*.egg
+dist/
+build/
