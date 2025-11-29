@@ -10,3 +10,6 @@ __pycache__/
 *.csv
 *.pkl
 *.h5
+
+# Code package
+sentiment_analysis.egg-info
