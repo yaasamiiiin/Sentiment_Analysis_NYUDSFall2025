@@ -18,3 +18,7 @@ sentiment_analysis.egg-info
 *.egg
 dist/
 build/
+
+# figures
+*.png
+/notebooks/*.png

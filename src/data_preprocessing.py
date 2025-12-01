@@ -117,7 +117,7 @@ def validate_data(df: pd.DataFrame) -> Dict:
     return validation_results
 
 
-def map_sentiments(df: pd.DataFrame, sentiment_col: str = 'Sentiment') -> pd.DataFrame:
+def map_sentiments(df: pd.DataFrame, sentiment_col: str = 'Sentiment', map_type: str = 'full') -> pd.DataFrame:
     """
     Map detailed sentiments to broader categories.
     
@@ -127,6 +127,9 @@ def map_sentiments(df: pd.DataFrame, sentiment_col: str = 'Sentiment') -> pd.Dat
         Input dataframe
     sentiment_col : str, default='Sentiment'
         Name of the sentiment column to map
+    map_type : str, default='full'
+        'full'  -> use sentiment_map (Joy / Sadness / Anger / Fear / Guilt / Neutral/Other)
+        '3cat'  -> use sentiment_map_3 (Positive / Negative / Neutral)
         
     Returns:
     --------
@@ -191,14 +194,66 @@ def map_sentiments(df: pd.DataFrame, sentiment_col: str = 'Sentiment') -> pd.Dat
         'journey': 'Neutral/Other', 'renewed effort': 'Neutral/Other', 'whispers of the past': 'Neutral/Other', 
         'intrigue': 'Neutral/Other'
     }
+
+    sentiment_map_3 = {
+        # Positive
+        'positive': 'Positive', 'happiness': 'Positive', 'joy': 'Positive', 'love': 'Positive', 'amusement': 'Positive', 
+        'enjoyment': 'Positive', 'admiration': 'Positive', 'affection': 'Positive', 'awe': 'Positive', 'acceptance': 'Positive', 
+        'adoration': 'Positive', 'excitement': 'Positive', 'kind': 'Positive', 'pride': 'Positive', 'elation': 'Positive', 
+        'euphoria': 'Positive', 'contentment': 'Positive', 'serenity': 'Positive', 'gratitude': 'Positive', 'hope': 'Positive', 
+        'empowerment': 'Positive', 'compassion': 'Positive', 'tenderness': 'Positive', 'arousal': 'Positive', 
+        'enthusiasm': 'Positive', 'fulfillment': 'Positive', 'reverence': 'Positive', 'determination': 'Positive', 'zest': 'Positive', 
+        'hopeful': 'Positive', 'proud': 'Positive', 'grateful': 'Positive', 'empathetic': 'Positive', 'compassionate': 'Positive', 
+        'playful': 'Positive', 'free-spirited': 'Positive', 'inspired': 'Positive', 'confident': 'Positive', 'thrill': 'Positive', 
+        'overjoyed': 'Positive', 'inspiration': 'Positive', 'motivation': 'Positive', 'satisfaction': 'Positive', 'blessed': 'Positive', 
+        'appreciation': 'Positive', 'confidence': 'Positive', 'accomplishment': 'Positive', 'wonderment': 'Positive', 
+        'optimism': 'Positive', 'enchantment': 'Positive', 'intrigue': 'Positive', 'playfuljoy': 'Positive', 'dreamchaser': 'Positive', 
+        'elegance': 'Positive', 'whimsy': 'Positive', 'harmony': 'Positive', 'creativity': 'Positive', 'radiance': 'Positive', 
+        'wonder': 'Positive', 'rejuvenation': 'Positive', 'coziness': 'Positive', 'adventure': 'Positive', 'melodic': 'Positive', 
+        'festivejoy': 'Positive', 'freedom': 'Positive', 'dazzle': 'Positive', 'adrenaline': 'Positive', 'artisticburst': 'Positive', 
+        'culinaryodyssey': 'Positive', 'resilience': 'Positive', 'spark': 'Positive', 'marvel': 'Positive', 'positivity': 'Positive', 
+        'kindness': 'Positive', 'friendship': 'Positive', 'success': 'Positive', 'exploration': 'Positive', 'amazement': 'Positive', 
+        'romance': 'Positive', 'captivation': 'Positive', 'tranquility': 'Positive', 'grandeur': 'Positive', 'energy': 'Positive', 
+        'celebration': 'Positive', 'charm': 'Positive', 'ecstasy': 'Positive', 'colorful': 'Positive', 'hypnotic': 'Positive', 
+        'connection': 'Positive', 'iconic': 'Positive', 'journey': 'Positive', 'engagement': 'Positive', 'touched': 'Positive', 
+        'triumph': 'Positive', 'heartwarming': 'Positive', 'breakthrough': 'Positive', 'joy in baking': 'Positive', 
+        'envisioning history': 'Positive', 'imagination': 'Positive', 'vibrancy': 'Positive', 'mesmerizing': 'Positive', 
+        'culinary adventure': 'Positive', 'winter magic': 'Positive', 'thrilling journey': 'Positive', "nature's beauty": 'Positive', 
+        'celestial wonder': 'Positive', 'creative inspiration': 'Positive', 'runway creativity': 'Positive', "ocean's freedom": 'Positive', 
+        'relief': 'Positive', 'mischievous': 'Positive', 'happy': 'Positive', 'joyfulreunion': 'Positive', 'solace': 'Positive',
+
+        # Negative
+        'negative': 'Negative', 'anger': 'Negative', 'fear': 'Negative', 'sadness': 'Negative', 'disgust': 'Negative', 
+        'disappointed': 'Negative', 'bitter': 'Negative', 'shame': 'Negative', 'despair': 'Negative', 'grief': 'Negative', 
+        'loneliness': 'Negative', 'jealousy': 'Negative', 'resentment': 'Negative', 'frustration': 'Negative', 'boredom': 'Negative', 
+        'anxiety': 'Negative', 'intimidation': 'Negative', 'helplessness': 'Negative', 'envy': 'Negative', 'regret': 'Negative', 
+        'bitterness': 'Negative', 'yearning': 'Negative', 'fearful': 'Negative', 'apprehensive': 'Negative', 'overwhelmed': 'Negative', 
+        'jealous': 'Negative', 'devastated': 'Negative', 'frustrated': 'Negative', 'envious': 'Negative', 'dismissive': 'Negative', 
+        'heartbreak': 'Negative', 'betrayal': 'Negative', 'suffering': 'Negative', 'emotionalstorm': 'Negative', 'isolation': 'Negative', 
+        'disappointment': 'Negative', 'lostlove': 'Negative', 'exhaustion': 'Negative', 'sorrow': 'Negative', 'darkness': 'Negative', 
+        'desperation': 'Negative', 'ruins': 'Negative', 'desolation': 'Negative', 'loss': 'Negative', 'heartache': 'Negative', 
+        'solitude': 'Negative', 'suspense': 'Negative', 'obstacle': 'Negative', 'sympathy': 'Negative', 'pressure': 'Negative', 
+        'renewed effort': 'Negative', 'miscalculation': 'Negative', 'challenge': 'Negative', 'embarrassed': 'Negative', 'sad': 'Negative', 
+        'hate': 'Negative', 'bad': 'Negative',
+
+        # Neutral
+        'neutral': 'Neutral', 'surprise': 'Neutral', 'anticipation': 'Neutral', 'calmness': 'Neutral', 'confusion': 'Neutral', 
+        'curiosity': 'Neutral', 'indifference': 'Neutral', 'numbness': 'Neutral', 'melancholy': 'Neutral', 'nostalgia': 'Neutral', 
+        'ambivalence': 'Neutral', 'bittersweet': 'Neutral', 'contemplation': 'Neutral', 'reflection': 'Neutral', 'mindfulness': 'Neutral', 
+        'pensive': 'Neutral', 'innerjourney': 'Neutral', 'immersion': 'Neutral', 'emotion': 'Neutral', 
+        'whispers of the past': 'Neutral'
+    }
     
     df_mapped = df.copy()
     
     # Standardize to lowercase
     df_mapped['Sentiment_Clean'] = df_mapped[sentiment_col].str.lower()
+
+    # Choose which map to use
+    mapping = sentiment_map_3 if map_type == '3cat' else sentiment_map
     
     # Map to groups
-    df_mapped['Sentiment_Group'] = df_mapped['Sentiment_Clean'].map(sentiment_map)
+    df_mapped['Sentiment_Group'] = df_mapped['Sentiment_Clean'].map(mapping)
     
     # Fill unmapped values
     df_mapped['Sentiment_Group'] = df_mapped['Sentiment_Group'].fillna('Neutral/Other')
